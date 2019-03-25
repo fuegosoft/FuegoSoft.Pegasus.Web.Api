@@ -1,0 +1,71 @@
+﻿using System;
+using System.Linq;
+using System.Security.Claims;
+using FuegoSoft.Pegasus.Lib.Business.Planner;
+using FuegoSoft.Pegasus.Lib.Business.Strategy;
+using FuegoSoft.Pegasus.Lib.Core.Helpers;
+using FuegoSoft.Pegasus.Lib.Data.Model;
+using FuegoSoft.Pegasus.Web.Service.Helpers;
+using FuegoSoft.Pegasus.Web.Service.Interface;
+using FuegoSoft.Pegasus.Web.Service.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+
+// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+namespace FuegoSoft.Pegasus.Web.Service.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UserController : BaseController
+    {
+        private readonly IConfiguration configuration;
+        private ILoginAuthHelper loginAuthHelper;
+        private UserPlanner userPlanner;
+
+        public UserController(IConfiguration _configuration)
+        {
+            configuration = _configuration;
+            loginAuthHelper = new LoginAuthHelper(configuration);
+            userPlanner = new UserPlanner();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("login")]
+        public ActionResult GetUserId([FromBody] Login login)
+        {
+            if(ModelState.IsValid)
+            {
+                userPlanner.SetUserStrategy(new UserStrategy(login.Username,login.Password));
+                var userCredentials = userPlanner.GetUserCredential();
+                if(userCredentials != null)
+                {
+                    var getToken = loginAuthHelper.GetUserToken(userCredentials);
+
+                }
+            }
+            return BadRequest();
+        }
+
+        /// <summary>
+        /// MISC Functions Mainly for checking credentials
+        /// </summary>
+        /// <returns>The test.</returns>
+        /* Checking claims. 
+        [Authorize(Roles = "Contractor")]
+        [AutoValidateAntiforgeryToken]
+        [HttpGet("test")]
+        public IActionResult Test()
+        {
+            var x = HttpContext.User.Claims.Select(c => new { Type = c.Type, Value = c.Value });
+            var getUsername = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Name).Select(c => c.Value).FirstOrDefault();
+            var getExpiration = HttpContext.User.Claims.Where(c => c.Type == "exp").Select(c => c.Value).FirstOrDefault();
+            var formatedTime = StringHelper.UnixTimeStampToDateTime(Convert.ToInt64(getExpiration));
+            var getLoginKey = HttpContext.User.Claims.Where(c => c.Type == "jti").Select(c => c.Value).FirstOrDefault();
+            return Ok(new { username = getUsername, claims = x, exp = formatedTime.ToString("yyyy-MM-dd hh:mm:ss tt"), jti = getLoginKey});
+        }
+        */
+
+    }
+}

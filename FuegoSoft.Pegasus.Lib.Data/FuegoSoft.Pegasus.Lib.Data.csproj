@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.3" />
+  </ItemGroup>    
+  <ItemGroup>
+    <ProjectReference Include="..\FuegoSoft.Pegasus.Lib.Core\FuegoSoft.Pegasus.Lib.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Interface\Test.cs" />
+    <Compile Remove="Interface\IUser.cs" />
+    <Compile Remove="Abstract\UserLogin.cs" />
+    <Compile Remove="Interface\IUserLogin.cs" />
+    <Compile Remove="Abstract\UserCredential.cs" />
+    <Compile Remove="Business\User\GetUserIDByUsernameAndPassword.cs" />
+    <Compile Remove="Models\User.cs" />
+    <Compile Remove="AbstractFactory\Interface\IUserFactory.cs" />
+    <Compile Remove="AbstractFactory\Interface\IUserLoginFactory.cs" />
+    <Compile Remove="AbstractFactory\IUserLoginFactory.cs" />
+    <Compile Remove="Product\User\BaseProduct.cs" />
+    <Compile Remove="Utilities\UserUtilities\IUserPerformType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Utilities\" />
+    <Folder Include="Interface\" />
+    <Folder Include="Repository\" />
+    <Folder Include="UnitOfWork\" />
+    <Folder Include="Interface\Repository\" />
+    <Folder Include="Interface\UnitOfWork\" />
+    <Folder Include="Interface\DbContext\" />
+    <Folder Include="Helper\" />
+  </ItemGroup>
+</Project>

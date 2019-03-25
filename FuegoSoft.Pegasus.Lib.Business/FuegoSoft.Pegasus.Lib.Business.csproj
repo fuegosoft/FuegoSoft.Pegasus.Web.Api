@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FuegoSoft.Pegasus.Lib.Data\FuegoSoft.Pegasus.Lib.Data.csproj" />
+    <ProjectReference Include="..\FuegoSoft.Pegasus.Lib.Core\FuegoSoft.Pegasus.Lib.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Main\User.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Abstract\" />
+    <Folder Include="Strategy\" />
+    <Folder Include="Planner\" />
+  </ItemGroup>
+</Project>
