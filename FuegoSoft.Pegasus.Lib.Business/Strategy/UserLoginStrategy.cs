@@ -25,7 +25,7 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
                     userUnitOfWork.UserLogins.Add(new UserLogin
                     {
                         UserId = userId,
-                        ExpirationDate = DateTime.UtcNow.AddMinutes(Convert.ToInt32(JsonHelper.GetJsonValue("Token:ExpirationMinutes")))
+                        ExpirationDate = DateTime.Now.AddMinutes(Convert.ToInt32(JsonHelper.GetJsonValue("Token:ExpirationMinutes")))
                     });
                     userUnitOfWork.Complete();
                     userUnitOfWork.Dispose();

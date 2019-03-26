@@ -18,7 +18,8 @@ namespace FuegoSoft.Pegasus.Lib.Core.Utilities.Interface
 
         void Update(TEntity entity);
         void UpdateRange(IEnumerable<TEntity> entities);
-
         void Save();
+
+        TEntity SaveAndRetrieve(TEntity entity);
     }
 }

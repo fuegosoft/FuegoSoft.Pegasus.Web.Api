@@ -9,10 +9,17 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
     {
         private string username;
         private string password;
+        private Guid userKey;
+
         public UserStrategy(string username, string password)
         {
             this.username = username;
             this.password = password;
+        }
+
+        public UserStrategy(Guid userKey)
+        {
+            this.userKey = userKey;
         }
 
         public override UserCredential GetUserCredentialByUsernameAndPassword()
@@ -54,6 +61,32 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
                 }
             }
             return userKey;
+        }
+
+        public override bool IsUserHasBeenBanned()
+        {
+            var result = false;
+            if(userKey.ToString().Length == 36)
+            {
+                using(var userUnitOfWork = new UserUnitOfWork(new AyudaContext()))
+                {
+                    result = userUnitOfWork.Users.IsUserBanned(userKey);
+                }
+            }
+            return result;
+        }
+
+        public override bool IsUserHasBeenDeleted()
+        {
+            var result = false;
+            if (userKey.ToString().Length == 36)
+            {
+                using (var userUnitOfWork = new UserUnitOfWork(new AyudaContext()))
+                {
+                    result = userUnitOfWork.Users.IsUserDeleted(userKey);
+                }
+            }
+            return result;
         }
     }
 }

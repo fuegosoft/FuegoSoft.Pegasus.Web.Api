@@ -14,6 +14,5 @@
   <ItemGroup>
     <Folder Include="Abstract\" />
     <Folder Include="Strategy\" />
-    <Folder Include="Planner\" />
   </ItemGroup>
 </Project>

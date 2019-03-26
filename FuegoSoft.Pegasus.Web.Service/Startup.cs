@@ -43,6 +43,10 @@ namespace FuegoSoft.Pegasus.Web.Service
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options =>
+            {
+                options.ReturnHttpNotAcceptable = true;
+            });
 
             // Add swagger UI to this project
             services.AddSwaggerGen(swagg =>
@@ -126,8 +130,11 @@ namespace FuegoSoft.Pegasus.Web.Service
             }
             // Enforce app to use static files.
             app.UseStaticFiles();
+
             // Jwt Authentication
             app.UseAuthentication();
+
+            //app.UseCors(cors => cors.AllowAnyHeader().AllowAnyMethod().AllowAnyMethod());
 
             if (_swaggerConfig.IsSwaggerEnable())
             {

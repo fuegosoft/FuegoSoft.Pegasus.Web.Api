@@ -23,12 +23,16 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
         private readonly IConfiguration configuration;
         private ILoginAuthHelper loginAuthHelper;
         private UserPlanner userPlanner;
+        private UserLoginPlanner userLoginPlanner;
+        private UserTokenPlanner userTokenPlanner;
 
         public UserController(IConfiguration _configuration)
         {
             configuration = _configuration;
             loginAuthHelper = new LoginAuthHelper(configuration);
             userPlanner = new UserPlanner();
+            userLoginPlanner = new UserLoginPlanner();
+            userTokenPlanner = new UserTokenPlanner();
         }
 
         [AllowAnonymous]
@@ -39,13 +43,23 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
             {
                 userPlanner.SetUserStrategy(new UserStrategy(login.Username,login.Password));
                 var userCredentials = userPlanner.GetUserCredential();
-                if(userCredentials != null)
+                if(userCredentials.UserID > 0)
                 {
-                    var getToken = loginAuthHelper.GetUserToken(userCredentials);
-
+                    userPlanner.SetUserStrategy(new UserStrategy(userCredentials.UserKey));
+                    if(!userPlanner.IsUserHasBeenBanned() || !userPlanner.IsUserHasBeenDeleted())
+                    {
+                        var generatedToken = loginAuthHelper.GetUserToken(userCredentials);
+                        userTokenPlanner.SetUserTokenPlanner(new UserTokenStrategy(userCredentials.UserLoginId, userCredentials.UserID, generatedToken));
+                        if (userTokenPlanner.InsertUserToken())
+                        {
+                            return Ok(new { token = generatedToken, loginKey = userCredentials.LoginKey });
+                        }
+                    }
+                    return Unauthorized(new { message = "Requested user has been disabled or deleted by the administrator." }); 
                 }
+                return NotFound(new { message = "Requested user was not found." });
             }
-            return BadRequest();
+            return BadRequest(ModelState);
         }
 
         /// <summary>

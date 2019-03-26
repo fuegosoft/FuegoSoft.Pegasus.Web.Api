@@ -13,8 +13,6 @@ namespace FuegoSoft.Pegasus.Lib.Data.Repository
             get { return Context as AyudaContext; }
         }
 
-        public UserTokenRepository(DbContext context) : base(context)
-        {
-        }
+        public UserTokenRepository(DbContext context) : base(context) { }
     }
 }
