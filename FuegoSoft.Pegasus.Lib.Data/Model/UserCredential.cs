@@ -4,6 +4,7 @@ namespace FuegoSoft.Pegasus.Lib.Data.Model
     public partial class UserCredential
     {
         public int UserID { get; set; }
+        public int UserLoginId { get; set; }
         public string Username { get; set; }
         public string EmailAddress { get; set; }
         public string ContactNumber { get; set; }

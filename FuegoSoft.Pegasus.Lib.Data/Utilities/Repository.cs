@@ -30,7 +30,13 @@ namespace FuegoSoft.Pegasus.Lib.Core.Utilities
         public void Save() => Context.SaveChanges();
 
         public void Update(TEntity entity) => Context.Set<TEntity>().Attach(entity);
-
         public void UpdateRange(IEnumerable<TEntity> entities) => Context.Set<TEntity>().AttachRange(entities);
+
+        public TEntity SaveAndRetrieve(TEntity entity)
+        {
+            Context.Set<TEntity>().Add(entity);
+            Context.SaveChanges();
+            return entity;
+        }
     }
 }

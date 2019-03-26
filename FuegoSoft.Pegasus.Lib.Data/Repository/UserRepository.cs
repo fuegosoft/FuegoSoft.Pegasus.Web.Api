@@ -39,22 +39,29 @@ namespace FuegoSoft.Pegasus.Lib.Data.Repository
             {
                 if (SecurePasswordHelper.Verify(password, getUserByUsername.Password))
                 {
-                    var getUserLogin = AyudaContext.UserLogin.Where(w => w.UserId == getUserByUsername.UserId).FirstOrDefault();
-                    if(getUserLogin.UserId > 0)
+                    var userLogin = new UserLogin
+                    {
+                        UserId = getUserByUsername.UserId,
+                        LoginTime = DateTime.Now,
+                        LogoutTime = null
+                    };
+                    AyudaContext.UserLogin.Add(userLogin);
+                    if (AyudaContext.SaveChanges() > 0)
                     {
                         var getUserProfile = AyudaContext.UserProfile.Where(w => w.UserId == getUserByUsername.UserId).FirstOrDefault();
-                        if(getUserProfile.UserId > 0)
-                        {
+                        if(getUserProfile.UserProfileId > 0)
                             userCredential.UserID = getUserByUsername.UserId;
                             userCredential.Username = getUserByUsername.Username;
+                            userCredential.UserKey = new Guid(getUserByUsername.UserKey.ToString());
                             userCredential.EmailAddress = getUserByUsername.EmailAddress;
                             userCredential.ContactNumber = getUserByUsername.ContactNumber;
-                            userCredential.UserKey = new Guid(getUserByUsername.UserKey.ToString());
-                            userCredential.LoginKey = new Guid(getUserLogin.LoginKey.ToString());
+                            userCredential.LoginKey = new Guid(userLogin.LoginKey.ToString());
+                            userCredential.UserLoginId = userLogin.UserLoginId;
                             userCredential.UserType = (int)getUserByUsername.UserType;
                             userCredential.BirthDate = getUserProfile.BirthDate;
-                        }
                     }
+                        
+                        
                 }
             }
             return userCredential;
@@ -72,6 +79,24 @@ namespace FuegoSoft.Pegasus.Lib.Data.Repository
                 }
             }
             return userKey;
+        }
+
+        public bool IsUserBanned(Guid userKey)
+        {
+            bool result = false;
+            var user = AyudaContext.User.Where(w => w.UserKey == userKey && w.IsDisabled == true).FirstOrDefault();
+            if (user != null)
+                result = !string.IsNullOrEmpty(AyudaContext.UserBanned.Where(w => w.UserId == user.UserId).FirstOrDefault().Reason);
+            return result;
+        }
+
+        public bool IsUserDeleted(Guid userKey)
+        {
+            bool result = false;
+            var user = AyudaContext.User.Where(w => w.UserKey == userKey && w.IsDeleted == true).FirstOrDefault();
+            if(user != null)
+                result = !string.IsNullOrEmpty(AyudaContext.UserBanned.Where(w => w.UserId == user.UserId).FirstOrDefault().Reason);
+            return result;
         }
     }
 }

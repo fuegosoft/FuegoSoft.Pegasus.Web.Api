@@ -11,22 +11,16 @@ namespace FuegoSoft.Pegasus.Lib.Business.Planner
         public void SetUserStrategy(UserAbstract userLoginStrategy)
         {
             _userLoginStrategy = userLoginStrategy;
-
         }
 
-        public UserCredential GetUserCredential()
-        {
-            return _userLoginStrategy.GetUserCredentialByUsernameAndPassword();
-        }
+        public UserCredential GetUserCredential() => _userLoginStrategy.GetUserCredentialByUsernameAndPassword();
 
-        public int GetUserId()
-        {
-            return _userLoginStrategy.GetUserIdByUsernameAndPassword();
-        }
+        public int GetUserId() => _userLoginStrategy.GetUserIdByUsernameAndPassword();
 
-        public Guid GetUserKey()
-        {
-            return _userLoginStrategy.GetUserKeyByUsernameAndPassword();
-        }
+        public Guid GetUserKey() => _userLoginStrategy.GetUserKeyByUsernameAndPassword();
+
+        public bool IsUserHasBeenBanned() => _userLoginStrategy.IsUserHasBeenBanned();
+
+        public bool IsUserHasBeenDeleted() => _userLoginStrategy.IsUserHasBeenDeleted();
     }
 }

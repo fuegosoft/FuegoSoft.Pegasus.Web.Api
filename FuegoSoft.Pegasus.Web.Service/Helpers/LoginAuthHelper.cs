@@ -45,8 +45,8 @@ namespace FuegoSoft.Pegasus.Web.Service.Helpers
                 issuer: configuration["Token:Issuer"],
                 audience: configuration["Token:Issuer"],
                 claims: Claims(user),
-                expires: DateTime.UtcNow.AddMinutes(Convert.ToInt32(configuration["Token:ExpirationMinutes"])),
-                notBefore: DateTime.UtcNow,
+                expires: DateTime.Now.AddMinutes(Convert.ToInt32(configuration["Token:ExpirationMinutes"])),
+                notBefore: DateTime.Now,
                 signingCredentials: UserSignInCredentials()
             );
         }
