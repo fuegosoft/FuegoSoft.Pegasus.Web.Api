@@ -6,5 +6,6 @@ namespace FuegoSoft.Pegasus.Lib.Data.Interface.Repository
 {
     public interface IUserLoginRepository : IRepository<UserLogin>
     {
+        UserLogin GetUserLoginByLoginKey(Guid loginKey);
     }
 }

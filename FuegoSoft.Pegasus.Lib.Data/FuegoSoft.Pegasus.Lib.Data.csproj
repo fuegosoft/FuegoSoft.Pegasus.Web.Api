@@ -31,11 +31,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Utilities\" />
-    <Folder Include="Interface\" />
-    <Folder Include="Repository\" />
-    <Folder Include="UnitOfWork\" />
-    <Folder Include="Interface\Repository\" />
-    <Folder Include="Interface\UnitOfWork\" />
     <Folder Include="Interface\DbContext\" />
     <Folder Include="Helper\" />
   </ItemGroup>

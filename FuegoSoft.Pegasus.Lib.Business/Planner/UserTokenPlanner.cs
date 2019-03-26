@@ -8,20 +8,18 @@ namespace FuegoSoft.Pegasus.Lib.Business.Planner
 {
     public class UserTokenPlanner
     {
-        private UserTokenAbstract userTokenAbstract;
-        public void SetUserTokenPlanner(UserTokenAbstract _userTokenAbstract)
+        private UserTokenBase userTokenBase;
+        public void SetUserTokenPlanner(UserTokenBase _userTokenBase)
         {
-            this.userTokenAbstract = _userTokenAbstract;
+            this.userTokenBase = _userTokenBase;
         }
 
-        public UserToken InsertUserTokenAndRetrieveInsertedId()
-        {
-            return userTokenAbstract.InsertUserTokenAndRetrieveInsertedId();
-        }
+        public UserToken InsertUserTokenAndRetrieveInsertedId() => userTokenBase.InsertUserTokenAndRetrieveInsertedId();
 
-        public bool InsertUserToken()
-        {
-            return userTokenAbstract.InsertUserToken();
-        }
+        public bool InsertUserToken() => userTokenBase.InsertUserToken();
+
+        public bool UpdateUserTokenDateUpdated() => userTokenBase.UpdateUserTokenDateUpdated();
+
+        public bool CheckUserTokenIsStillActive() => userTokenBase.CheckTokenIsStillActive();
     }
 }

@@ -8,11 +8,13 @@ namespace FuegoSoft.Pegasus.Lib.Business.Planner
 {
     public class UserLoginPlanner
     {
-        private UserLoginAbstract userLoginAbstract;
+        private UserLoginBase userLoginBase;
 
-        public void SetUserLoginPlanner(UserLoginAbstract _userLoginAbstract)
+        public void SetUserLoginPlanner(UserLoginBase _userLoginBase)
         {
-            this.userLoginAbstract = _userLoginAbstract;
+            this.userLoginBase = _userLoginBase;
         }
+
+        public bool UpdateUserLoginLogoutTime() => userLoginBase.UpdateUserLogoutTime();
     }
 }
