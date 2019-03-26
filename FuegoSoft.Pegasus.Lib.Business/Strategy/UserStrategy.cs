@@ -5,7 +5,7 @@ using FuegoSoft.Pegasus.Lib.Data.UnitOfWork;
 
 namespace FuegoSoft.Pegasus.Lib.Business.Strategy
 {
-    public class UserStrategy : UserAbstract
+    public class UserStrategy : UserBase
     {
         private string username;
         private string password;

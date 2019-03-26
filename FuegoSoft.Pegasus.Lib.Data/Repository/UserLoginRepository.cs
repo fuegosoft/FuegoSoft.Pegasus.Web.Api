@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using FuegoSoft.Pegasus.Lib.Core.Utilities;
 using FuegoSoft.Pegasus.Lib.Data.Interface.Repository;
 using FuegoSoft.Pegasus.Lib.Data.Model;
@@ -14,5 +15,7 @@ namespace FuegoSoft.Pegasus.Lib.Data.Repository
         }
 
         public UserLoginRepository(DbContext context) : base(context) { }
+
+        public UserLogin GetUserLoginByLoginKey(Guid loginKey) => AyudaContext.UserLogin.Where(w => w.LoginKey == loginKey).FirstOrDefault();
     }
 }

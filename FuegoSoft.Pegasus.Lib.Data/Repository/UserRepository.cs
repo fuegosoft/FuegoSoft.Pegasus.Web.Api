@@ -43,7 +43,8 @@ namespace FuegoSoft.Pegasus.Lib.Data.Repository
                     {
                         UserId = getUserByUsername.UserId,
                         LoginTime = DateTime.Now,
-                        LogoutTime = null
+                        LogoutTime = null,
+                        ExpirationDate = DateTime.Now.AddMinutes(Convert.ToInt32(JsonHelper.GetJsonValue("Token:ExpirationMinutes")))
                     };
                     AyudaContext.UserLogin.Add(userLogin);
                     if (AyudaContext.SaveChanges() > 0)

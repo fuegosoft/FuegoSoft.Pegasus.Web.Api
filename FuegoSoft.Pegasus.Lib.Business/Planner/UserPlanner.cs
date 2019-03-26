@@ -6,21 +6,21 @@ namespace FuegoSoft.Pegasus.Lib.Business.Planner
 {
     public class UserPlanner
     {
-        private UserAbstract _userLoginStrategy;
+        private UserBase _userBase;
 
-        public void SetUserStrategy(UserAbstract userLoginStrategy)
+        public void SetUserStrategy(UserBase userBase)
         {
-            _userLoginStrategy = userLoginStrategy;
+            this._userBase = userBase;
         }
 
-        public UserCredential GetUserCredential() => _userLoginStrategy.GetUserCredentialByUsernameAndPassword();
+        public UserCredential GetUserCredential() => _userBase.GetUserCredentialByUsernameAndPassword();
 
-        public int GetUserId() => _userLoginStrategy.GetUserIdByUsernameAndPassword();
+        public int GetUserId() => _userBase.GetUserIdByUsernameAndPassword();
 
-        public Guid GetUserKey() => _userLoginStrategy.GetUserKeyByUsernameAndPassword();
+        public Guid GetUserKey() => _userBase.GetUserKeyByUsernameAndPassword();
 
-        public bool IsUserHasBeenBanned() => _userLoginStrategy.IsUserHasBeenBanned();
+        public bool IsUserHasBeenBanned() => _userBase.IsUserHasBeenBanned();
 
-        public bool IsUserHasBeenDeleted() => _userLoginStrategy.IsUserHasBeenDeleted();
+        public bool IsUserHasBeenDeleted() => _userBase.IsUserHasBeenDeleted();
     }
 }

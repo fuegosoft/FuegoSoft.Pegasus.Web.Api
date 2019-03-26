@@ -11,8 +11,4 @@
   <ItemGroup>
     <Compile Remove="Main\User.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Abstract\" />
-    <Folder Include="Strategy\" />
-  </ItemGroup>
 </Project>

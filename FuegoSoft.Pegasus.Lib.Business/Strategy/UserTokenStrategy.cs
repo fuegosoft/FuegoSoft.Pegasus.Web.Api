@@ -6,7 +6,7 @@ using FuegoSoft.Pegasus.Lib.Data.UnitOfWork;
 
 namespace FuegoSoft.Pegasus.Lib.Business.Strategy
 {
-    public class UserTokenStrategy : UserTokenAbstract
+    public class UserTokenStrategy : UserTokenBase
     {
         string token;
         int userId;
@@ -17,6 +17,11 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
             this.userLoginId = _userLoginId;
             this.userId = _userId;
             this.token = _token;
+        }
+
+        public UserTokenStrategy(string token)
+        {
+            this.token = token;
         }
 
         public override bool InsertUserToken()
@@ -61,6 +66,39 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
                 }
             }
             return userToken;
+        }
+
+        public override bool UpdateUserTokenDateUpdated()
+        {
+            bool result = false;
+            if(!string.IsNullOrEmpty(token))
+            {
+                using(var userUnitOfWork = new UserUnitOfWork(new AyudaContext()))
+                {
+                    var userToken = userUnitOfWork.UserTokens.GetUserTokenByToken(token);
+                    if(userToken.UserTokenId > 0)
+                    {
+                        userToken.DateUpdated = DateTime.Now;
+                        userUnitOfWork.UserTokens.Update(userToken);
+                        result = userUnitOfWork.Complete() > 0;
+                        userUnitOfWork.Dispose();
+                    }
+                }
+            }
+            return result;
+        }
+
+        public override bool CheckTokenIsStillActive()
+        {
+            bool result = false;
+            if(!string.IsNullOrEmpty(token))
+            {
+                using (var userUnitOfWork = new UserUnitOfWork(new AyudaContext()))
+                {
+                    result = userUnitOfWork.UserTokens.IsTokenStillActiveByToken(token);
+                }
+            }
+            return result;
         }
     }
 }

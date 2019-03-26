@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using FuegoSoft.Pegasus.Lib.Business.Planner;
@@ -17,7 +18,7 @@ using Microsoft.Extensions.Configuration;
 namespace FuegoSoft.Pegasus.Web.Service.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class UserController : BaseController
     {
         private readonly IConfiguration configuration;
@@ -25,6 +26,7 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
         private UserPlanner userPlanner;
         private UserLoginPlanner userLoginPlanner;
         private UserTokenPlanner userTokenPlanner;
+        private TokenBlackListPlanner tokenBlackListPlanner;
 
         public UserController(IConfiguration _configuration)
         {
@@ -33,11 +35,12 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
             userPlanner = new UserPlanner();
             userLoginPlanner = new UserLoginPlanner();
             userTokenPlanner = new UserTokenPlanner();
+            tokenBlackListPlanner = new TokenBlackListPlanner();
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public ActionResult GetUserId([FromBody] Login login)
+        public ActionResult PerformUserLogin([FromBody] Login login)
         {
             if(ModelState.IsValid)
             {
@@ -62,6 +65,32 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
             return BadRequest(ModelState);
         }
 
+        [Authorize]
+        [HttpPost("logout/{loginKey}")]
+        public IActionResult PerformUserLogout([Required]Guid loginKey)
+        {
+            if(ModelState.IsValid)
+            {
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1];
+                if(!string.IsNullOrEmpty(token))
+                {
+                    userTokenPlanner.SetUserTokenPlanner(new UserTokenStrategy(token));
+                    if (userTokenPlanner.CheckUserTokenIsStillActive())
+                    {
+                        userTokenPlanner.UpdateUserTokenDateUpdated();
+                        userLoginPlanner.SetUserLoginPlanner(new UserLoginStrategy(loginKey));
+                        if (userLoginPlanner.UpdateUserLoginLogoutTime())
+                        {
+                            tokenBlackListPlanner.SetTokenBlackListPlanner(new TokenBlackListStrategy(token, loginKey));
+                            var isLogout = tokenBlackListPlanner.InsertTokenBlackList();
+                            return Ok(new { logout = isLogout });
+                        }
+                    }
+                }
+                return NoContent();
+            }
+            return BadRequest(ModelState);
+        }
         /// <summary>
         /// MISC Functions Mainly for checking credentials
         /// </summary>
