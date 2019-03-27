@@ -16,6 +16,12 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
             this.token = token;
             this.loginKey = loginKey;
         }
+
+        public TokenBlackListStrategy(string token)
+        {
+            this.token = token;
+        }
+
         public override bool InsertTokenBlackList()
         {
             bool result = false;
@@ -30,6 +36,20 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
                     };
                     tokenBlackListUnitOfWork.TokenBlackLists.Add(tokenBlackList);
                     result = tokenBlackListUnitOfWork.Complete() > 0;
+                    tokenBlackListUnitOfWork.Dispose();
+                }
+            }
+            return result;
+        }
+
+        public override bool IsTokenInBlackList()
+        {
+            bool result = false;
+            if(!string.IsNullOrEmpty(token))
+            {
+                using(var tokenBlackListUnitOfWork = new TokenBlackListUnitOfWork(new AyudaContext()))
+                {
+                    result = tokenBlackListUnitOfWork.TokenBlackLists.IsTokenInBlackList(token);
                     tokenBlackListUnitOfWork.Dispose();
                 }
             }

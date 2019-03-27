@@ -6,8 +6,8 @@ using System.Text;
 
 namespace FuegoSoft.Pegasus.Lib.Data.Interface.Repository
 {
-    public interface ITokenBlackListRepository : IRepository<TokenBlackList>
+    public interface IUserProfileRepository : IRepository<UserProfile>
     {
-        bool IsTokenInBlackList(string token);
+        UserProfile GetUserProfileByUserId(int userId);
     }
 }

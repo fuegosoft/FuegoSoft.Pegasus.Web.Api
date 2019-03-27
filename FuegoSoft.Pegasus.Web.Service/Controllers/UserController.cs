@@ -27,6 +27,7 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
         private UserLoginPlanner userLoginPlanner;
         private UserTokenPlanner userTokenPlanner;
         private TokenBlackListPlanner tokenBlackListPlanner;
+        private UserProfilePlanner userProfilePlanner;
 
         public UserController(IConfiguration _configuration)
         {
@@ -36,6 +37,7 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
             userLoginPlanner = new UserLoginPlanner();
             userTokenPlanner = new UserTokenPlanner();
             tokenBlackListPlanner = new TokenBlackListPlanner();
+            userProfilePlanner = new UserProfilePlanner();
         }
 
         [AllowAnonymous]
@@ -55,7 +57,7 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
                         userTokenPlanner.SetUserTokenPlanner(new UserTokenStrategy(userCredentials.UserLoginId, userCredentials.UserID, generatedToken));
                         if (userTokenPlanner.InsertUserToken())
                         {
-                            return Ok(new { token = generatedToken, loginKey = userCredentials.LoginKey });
+                            return Ok(new { token = generatedToken });
                         }
                     }
                     return Unauthorized(new { message = "Requested user has been disabled or deleted by the administrator." }); 
@@ -66,8 +68,9 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
         }
 
         [Authorize]
-        [HttpPost("logout/{loginKey}")]
-        public IActionResult PerformUserLogout([Required]Guid loginKey)
+        [ValidateTokenIsActive]
+        [HttpPost("logout")]
+        public IActionResult PerformUserLogout()
         {
             if(ModelState.IsValid)
             {
@@ -77,11 +80,12 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
                     userTokenPlanner.SetUserTokenPlanner(new UserTokenStrategy(token));
                     if (userTokenPlanner.CheckUserTokenIsStillActive())
                     {
+                        var getLoginKey = HttpContext.User.Claims.Where(c => c.Type == "jti").Select(c => c.Value).FirstOrDefault();
                         userTokenPlanner.UpdateUserTokenDateUpdated();
-                        userLoginPlanner.SetUserLoginPlanner(new UserLoginStrategy(loginKey));
+                        userLoginPlanner.SetUserLoginPlanner(new UserLoginStrategy(new Guid(getLoginKey)));
                         if (userLoginPlanner.UpdateUserLoginLogoutTime())
                         {
-                            tokenBlackListPlanner.SetTokenBlackListPlanner(new TokenBlackListStrategy(token, loginKey));
+                            tokenBlackListPlanner.SetTokenBlackListPlanner(new TokenBlackListStrategy(token, new Guid(getLoginKey)));
                             var isLogout = tokenBlackListPlanner.InsertTokenBlackList();
                             return Ok(new { logout = isLogout });
                         }
@@ -91,12 +95,31 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
             }
             return BadRequest(ModelState);
         }
+
+        [Authorize]
+        [ValidateTokenIsActive]
+        [HttpGet("userprofile/get")]
+        public IActionResult GetUserProfile()
+        {
+            var userId = Convert.ToInt32(HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault());
+            if (userId > 0)
+            {
+                userProfilePlanner.SetUserProfilePlanner(new UserProfileStrategy(userId));
+                var userProfile = userProfilePlanner.GetUserProfile();
+                if(userProfile.UserProfileId > 0)
+                {
+                    return Ok(userProfile);
+                }
+                return NotFound("User's profile not found.");
+            }
+            return BadRequest("Invalid requested token.");
+        }
         /// <summary>
         /// MISC Functions Mainly for checking credentials
         /// </summary>
         /// <returns>The test.</returns>
         /* Checking claims. 
-        [Authorize(Roles = "Contractor")]
+        [Authorize(Roles = "User")]
         [AutoValidateAntiforgeryToken]
         [HttpGet("test")]
         public IActionResult Test()
@@ -106,6 +129,7 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
             var getExpiration = HttpContext.User.Claims.Where(c => c.Type == "exp").Select(c => c.Value).FirstOrDefault();
             var formatedTime = StringHelper.UnixTimeStampToDateTime(Convert.ToInt64(getExpiration));
             var getLoginKey = HttpContext.User.Claims.Where(c => c.Type == "jti").Select(c => c.Value).FirstOrDefault();
+            var getUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault();
             return Ok(new { username = getUsername, claims = x, exp = formatedTime.ToString("yyyy-MM-dd hh:mm:ss tt"), jti = getLoginKey});
         }
         */
