@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace FuegoSoft.Pegasus.Lib.Data.Model
 {
     public partial class UserProfile
     {
+        [JsonIgnore]
         public int UserProfileId { get; set; }
+        [JsonIgnore]
         public int UserId { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }

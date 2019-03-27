@@ -2,6 +2,7 @@
 using FuegoSoft.Pegasus.Lib.Business.Abstract;
 using FuegoSoft.Pegasus.Lib.Data.Model;
 using FuegoSoft.Pegasus.Lib.Data.UnitOfWork;
+using FuegoSoft.Pegasus.Lib.Core.Helpers;
 
 namespace FuegoSoft.Pegasus.Lib.Business.Strategy
 {
@@ -129,7 +130,7 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
                     var user = new User
                     {
                         Username = username,
-                        Password = password,
+                        Password = SecurePasswordHelper.Hash(password),
                         EmailAddress = emailAddress,
                         ContactNumber = contactNumber
                     };
