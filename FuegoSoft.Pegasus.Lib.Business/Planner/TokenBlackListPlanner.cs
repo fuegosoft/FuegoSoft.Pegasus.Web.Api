@@ -13,9 +13,8 @@ namespace FuegoSoft.Pegasus.Lib.Business.Planner
             this.tokenBlackListBase = _tokenBlackListBase;
         }
 
-        public bool InsertTokenBlackList()
-        {
-            return tokenBlackListBase.InsertTokenBlackList();
-        }
+        public bool InsertTokenBlackList() => tokenBlackListBase.InsertTokenBlackList();
+
+        public bool IsTokenIsBlackListed() => tokenBlackListBase.IsTokenInBlackList();
     }
 }

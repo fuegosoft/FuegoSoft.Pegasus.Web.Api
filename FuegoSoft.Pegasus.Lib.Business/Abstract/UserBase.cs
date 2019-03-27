@@ -10,5 +10,6 @@ namespace FuegoSoft.Pegasus.Lib.Business.Abstract
         public abstract Guid GetUserKeyByUsernameAndPassword();
         public abstract bool IsUserHasBeenBanned();
         public abstract bool IsUserHasBeenDeleted();
+        public abstract UserCredential GetUserCredentialByUserKey();
     }
 }

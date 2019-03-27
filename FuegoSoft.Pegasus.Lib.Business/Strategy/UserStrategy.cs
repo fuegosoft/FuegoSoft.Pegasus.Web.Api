@@ -88,5 +88,18 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
             }
             return result;
         }
+
+        public override UserCredential GetUserCredentialByUserKey()
+        {
+            var userCredential = new UserCredential();
+            if(userKey.ToString().Length == 36)
+            {
+                using(var userUnitOfWork = new UserUnitOfWork(new AyudaContext()))
+                {
+                    userCredential = userUnitOfWork.Users.GetUserCredentialByUserKey(userKey);
+                }
+            }
+            return userCredential;
+        }
     }
 }

@@ -79,6 +79,7 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
                     if(userToken.UserTokenId > 0)
                     {
                         userToken.DateUpdated = DateTime.Now;
+                        userToken.ExpirationDate = DateTime.Now;
                         userUnitOfWork.UserTokens.Update(userToken);
                         result = userUnitOfWork.Complete() > 0;
                         userUnitOfWork.Dispose();

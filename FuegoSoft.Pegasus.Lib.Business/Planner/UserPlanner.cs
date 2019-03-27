@@ -22,5 +22,7 @@ namespace FuegoSoft.Pegasus.Lib.Business.Planner
         public bool IsUserHasBeenBanned() => _userBase.IsUserHasBeenBanned();
 
         public bool IsUserHasBeenDeleted() => _userBase.IsUserHasBeenDeleted();
+
+        public UserCredential GetUserCredentialByUserKey() => _userBase.GetUserCredentialByUserKey();
     }
 }

@@ -17,11 +17,6 @@ namespace FuegoSoft.Pegasus.Lib.Data.Repository
         {
         }
 
-        public bool IsTokenInBlackList(string token)
-        {
-            bool result = false;
-            result = !string.IsNullOrEmpty(AyudaContext.TokenBlackList.Where(w => w.Token == token).Select(s => s.Token).FirstOrDefault());
-            return result;
-        }
+        public bool IsTokenInBlackList(string token) => !string.IsNullOrEmpty(AyudaContext.TokenBlackList.Where(w => w.Token == token).Select(s => s.Token).FirstOrDefault());
     }
 }

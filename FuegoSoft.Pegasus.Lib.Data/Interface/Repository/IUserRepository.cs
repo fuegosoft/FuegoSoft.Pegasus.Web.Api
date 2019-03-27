@@ -12,5 +12,6 @@ namespace FuegoSoft.Pegasus.Lib.Data.Interface.Repository
         Guid GetUserKeyByUsernameAndPassword(string username, string password);
         bool IsUserBanned(Guid userKey);
         bool IsUserDeleted(Guid userKey);
+        UserCredential GetUserCredentialByUserKey(Guid userKey);
     }
 }
