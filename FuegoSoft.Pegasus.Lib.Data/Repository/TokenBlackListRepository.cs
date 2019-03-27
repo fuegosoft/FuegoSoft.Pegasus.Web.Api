@@ -4,6 +4,7 @@ using FuegoSoft.Pegasus.Lib.Data.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace FuegoSoft.Pegasus.Lib.Data.Repository
@@ -14,6 +15,13 @@ namespace FuegoSoft.Pegasus.Lib.Data.Repository
 
         public TokenBlackListRepository(DbContext context) : base(context)
         {
+        }
+
+        public bool IsTokenInBlackList(string token)
+        {
+            bool result = false;
+            result = !string.IsNullOrEmpty(AyudaContext.TokenBlackList.Where(w => w.Token == token).Select(s => s.Token).FirstOrDefault());
+            return result;
         }
     }
 }

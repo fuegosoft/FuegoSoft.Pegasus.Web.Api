@@ -16,6 +16,7 @@ namespace FuegoSoft.Pegasus.Lib.Data.UnitOfWork
             Users = new UserRepository(Context);
             UserTokens = new UserTokenRepository(context);
             UserLogins = new UserLoginRepository(context);
+            UserProfiles = new UserProfileRepository(context);
         }
 
         public IUserRepository Users { get; private set; }
@@ -23,6 +24,8 @@ namespace FuegoSoft.Pegasus.Lib.Data.UnitOfWork
         public IUserTokenRepository UserTokens { get; private set; }
 
         public IUserLoginRepository UserLogins { get; private set; }
+
+        public IUserProfileRepository UserProfiles { get; private set; }
 
         public int Complete()
         {
