@@ -50,7 +50,6 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
                 using(var tokenBlackListUnitOfWork = new TokenBlackListUnitOfWork(new AyudaContext()))
                 {
                     result = tokenBlackListUnitOfWork.TokenBlackLists.IsTokenInBlackList(token);
-                    tokenBlackListUnitOfWork.Dispose();
                 }
             }
             return result;

@@ -99,5 +99,52 @@ namespace FuegoSoft.Pegasus.Lib.Data.Repository
                 result = !string.IsNullOrEmpty(AyudaContext.UserBanned.Where(w => w.UserId == user.UserId).FirstOrDefault().Reason);
             return result;
         }
+
+        public UserCredential GetUserCredentialByUserKey(Guid userKey)
+        {
+            var userCredential = new UserCredential();
+            var user = AyudaContext.User.Where(w => w.UserKey == userKey).FirstOrDefault();
+            if(user.UserId > 0)
+            {
+                var userProfile = AyudaContext.UserProfile.Where(w => w.UserId == user.UserId).FirstOrDefault();
+                if(userProfile.UserProfileId > 0)
+                {
+                    var userLogin = AyudaContext.UserLogin.Where(w => w.UserId == user.UserId).OrderByDescending(o => o.DateCreated).FirstOrDefault();
+                    if(userLogin.UserLoginId > 0)
+                    {
+                        userLogin.LogoutTime = DateTime.Now;
+                        userLogin.DateUpdated = DateTime.Now;
+
+                        AyudaContext.UserLogin.Update(userLogin);
+                        if(AyudaContext.SaveChanges() > 0)
+                        {
+                            // save new user login
+                            var login = new UserLogin
+                            {
+                                UserId = user.UserId,
+                                LoginTime = DateTime.Now,
+                                LogoutTime = null,
+                                ExpirationDate = DateTime.Now.AddMinutes(Convert.ToInt32(JsonHelper.GetJsonValue("Token:ExpirationMinutes")))
+                            };
+
+                            AyudaContext.UserLogin.Add(login);
+                            if(AyudaContext.SaveChanges() > 0)
+                            {
+                                userCredential.UserID = user.UserId;
+                                userCredential.Username = user.Username;
+                                userCredential.UserKey = new Guid(user.UserKey.ToString());
+                                userCredential.EmailAddress = user.EmailAddress;
+                                userCredential.ContactNumber = user.ContactNumber;
+                                userCredential.LoginKey = new Guid(login.LoginKey.ToString());
+                                userCredential.UserLoginId = login.UserLoginId;
+                                userCredential.UserType = (int)user.UserType;
+                                userCredential.BirthDate = userProfile.BirthDate;
+                            }
+                        }
+                    }
+                }
+            }
+            return userCredential;
+        }
     }
 }

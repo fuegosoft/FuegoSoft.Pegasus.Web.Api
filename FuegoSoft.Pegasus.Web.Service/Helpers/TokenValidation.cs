@@ -30,12 +30,16 @@ namespace FuegoSoft.Pegasus.Web.Service.Helpers
                 {
                     var loginKey = user.Claims.Where(w => w.Type == "jti").Select(c => c.Value).FirstOrDefault();
                     userTokenPlanner.SetUserTokenPlanner(new UserTokenStrategy(header[1].Trim()));
+                    tokenBlackListPlanner.SetTokenBlackListPlanner(new TokenBlackListStrategy(header[1]));
                     if (!userTokenPlanner.CheckUserTokenIsStillActive())
                     {
-                        tokenBlackListPlanner.SetTokenBlackListPlanner(new TokenBlackListStrategy(header[1].Trim(), new Guid(loginKey)));
-                        tokenBlackListPlanner.InsertTokenBlackList();
-                        if (!tokenBlackListPlanner.InsertTokenBlackList())
-                            context.Result = new UnauthorizedResult();
+                        userTokenPlanner.UpdateUserTokenDateUpdated();
+                        if (!tokenBlackListPlanner.IsTokenIsBlackListed())
+                        {
+                            tokenBlackListPlanner.SetTokenBlackListPlanner(new TokenBlackListStrategy(header[1].Trim(), new Guid(loginKey)));
+                            tokenBlackListPlanner.InsertTokenBlackList();
+                        }
+                        context.Result = new UnauthorizedResult();
                         return;
                     }
                 }

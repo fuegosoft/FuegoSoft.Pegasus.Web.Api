@@ -42,7 +42,7 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public ActionResult PerformUserLogin([FromBody] Login login)
+        public IActionResult PerformUserLogin([FromBody] Login login)
         {
             if(ModelState.IsValid)
             {
@@ -98,6 +98,41 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
 
         [Authorize]
         [ValidateTokenIsActive]
+        [HttpPost("token/renew")]
+        public IActionResult RenewToken()
+        {
+            var getUserKey = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Actor).Select(c => c.Value).FirstOrDefault();
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1];
+            if (!string.IsNullOrEmpty(getUserKey) || !string.IsNullOrEmpty(token))
+            {
+                userPlanner.SetUserStrategy(new UserStrategy(new Guid(getUserKey.ToString())));
+                var userCredential = userPlanner.GetUserCredentialByUserKey();
+                if(userCredential.UserID > 0)
+                {
+                    var loginKey = HttpContext.User.Claims.Where(c => c.Type == "jti").Select(c => c.Value).FirstOrDefault();
+                    userTokenPlanner.SetUserTokenPlanner(new UserTokenStrategy(token));
+                    if (userTokenPlanner.UpdateUserTokenDateUpdated())
+                    {
+                        tokenBlackListPlanner.SetTokenBlackListPlanner(new TokenBlackListStrategy(token, new Guid(loginKey)));
+                        var insertPreviousToken = tokenBlackListPlanner.InsertTokenBlackList();
+                        if (insertPreviousToken)
+                        {
+                            var generatedToken = loginAuthHelper.GetUserToken(userCredential);
+                            userTokenPlanner.SetUserTokenPlanner(new UserTokenStrategy(userCredential.UserLoginId, userCredential.UserID, generatedToken));
+                            if (userTokenPlanner.InsertUserToken())
+                            {
+                                return Ok(new { token = generatedToken });
+                            }
+                        }
+                    }
+                }
+                return NotFound("User request data was not found.");
+            }
+            return BadRequest("Invalid user token request.");
+        }
+
+        [Authorize]
+        [ValidateTokenIsActive]
         [HttpGet("userprofile/get")]
         public IActionResult GetUserProfile()
         {
@@ -130,9 +165,9 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
             var formatedTime = StringHelper.UnixTimeStampToDateTime(Convert.ToInt64(getExpiration));
             var getLoginKey = HttpContext.User.Claims.Where(c => c.Type == "jti").Select(c => c.Value).FirstOrDefault();
             var getUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault();
+            var getUserKey = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Actor).Select(c => c.Value).FirstOrDefault();
             return Ok(new { username = getUsername, claims = x, exp = formatedTime.ToString("yyyy-MM-dd hh:mm:ss tt"), jti = getLoginKey});
         }
-        */
-
+         */
     }
 }
