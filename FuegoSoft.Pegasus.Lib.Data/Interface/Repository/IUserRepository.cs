@@ -13,5 +13,6 @@ namespace FuegoSoft.Pegasus.Lib.Data.Interface.Repository
         bool IsUserBanned(Guid userKey);
         bool IsUserDeleted(Guid userKey);
         UserCredential GetUserCredentialByUserKey(Guid userKey);
+        bool IsUsernameIsAlreadyTaken(string username, string emailAddress, string contactNumber);
     }
 }

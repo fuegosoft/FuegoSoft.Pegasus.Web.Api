@@ -146,5 +146,7 @@ namespace FuegoSoft.Pegasus.Lib.Data.Repository
             }
             return userCredential;
         }
+
+        public bool IsUsernameIsAlreadyTaken(string username, string emailAddress, string contactNumber) => AyudaContext.User.Any(a => a.Username.Contains(username) || a.EmailAddress.Contains(emailAddress) || a.ContactNumber.Contains(contactNumber));
     }
 }

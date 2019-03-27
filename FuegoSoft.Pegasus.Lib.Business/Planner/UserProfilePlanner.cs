@@ -14,9 +14,8 @@ namespace FuegoSoft.Pegasus.Lib.Business.Planner
             this.userProfileBase = userProfileBase;
         }
 
-        public UserProfile GetUserProfile()
-        {
-            return userProfileBase.GetUserProfileByUserId();
-        }
+        public UserProfile GetUserProfile() => userProfileBase.GetUserProfileByUserId();
+
+        public bool CreateUserProfile() => userProfileBase.CreateUserProfile();
     }
 }

@@ -24,5 +24,9 @@ namespace FuegoSoft.Pegasus.Lib.Business.Planner
         public bool IsUserHasBeenDeleted() => _userBase.IsUserHasBeenDeleted();
 
         public UserCredential GetUserCredentialByUserKey() => _userBase.GetUserCredentialByUserKey();
+
+        public int CreateUser() => _userBase.CreateUserAndRetrieveUserId();
+
+        public bool IsUsernameIsAlreadyTaken() => _userBase.IsUsernameIsAlreadyTaken();
     }
 }
