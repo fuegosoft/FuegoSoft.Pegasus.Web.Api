@@ -11,5 +11,7 @@ namespace FuegoSoft.Pegasus.Lib.Business.Abstract
         public abstract bool IsUserHasBeenBanned();
         public abstract bool IsUserHasBeenDeleted();
         public abstract UserCredential GetUserCredentialByUserKey();
+        public abstract int CreateUserAndRetrieveUserId();
+        public abstract bool IsUsernameIsAlreadyTaken();
     }
 }

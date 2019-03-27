@@ -9,7 +9,14 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
     {
         private string username;
         private string password;
+        private string emailAddress;
+        private string contactNumber;
         private Guid userKey;
+
+        public UserStrategy(Guid userKey)
+        {
+            this.userKey = userKey;
+        }
 
         public UserStrategy(string username, string password)
         {
@@ -17,9 +24,19 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
             this.password = password;
         }
 
-        public UserStrategy(Guid userKey)
+        public UserStrategy(string username, string password, string emailAddress, string contactNumber)
         {
-            this.userKey = userKey;
+            this.username = username;
+            this.password = password;
+            this.emailAddress = emailAddress;
+            this.contactNumber = contactNumber;
+        }
+
+        public UserStrategy(string username, string emailAddress, string contactNumber)
+        {
+            this.username = username;
+            this.emailAddress = emailAddress;
+            this.contactNumber = contactNumber;
         }
 
         public override UserCredential GetUserCredentialByUsernameAndPassword()
@@ -100,6 +117,43 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
                 }
             }
             return userCredential;
+        }
+
+        public override int CreateUserAndRetrieveUserId()
+        {
+            int userId = 0;
+            if(!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+            {
+                using(var userUnitOfWOrk = new UserUnitOfWork(new AyudaContext()))
+                {
+                    var user = new User
+                    {
+                        Username = username,
+                        Password = password,
+                        EmailAddress = emailAddress,
+                        ContactNumber = contactNumber
+                    };
+                    userUnitOfWOrk.Users.Add(user);
+                    userUnitOfWOrk.Complete();
+
+                    userId = user.UserId;
+                    userUnitOfWOrk.Dispose();
+                }
+            }
+            return userId;
+        }
+
+        public override bool IsUsernameIsAlreadyTaken()
+        {
+            bool result = false;
+            if(!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(emailAddress) && !string.IsNullOrEmpty(contactNumber))
+            {
+                using(var userUnitOfWork = new UserUnitOfWork(new AyudaContext()))
+                {
+                    result = userUnitOfWork.Users.IsUsernameIsAlreadyTaken(username, emailAddress, contactNumber);
+                }
+            }
+            return result;
         }
     }
 }
