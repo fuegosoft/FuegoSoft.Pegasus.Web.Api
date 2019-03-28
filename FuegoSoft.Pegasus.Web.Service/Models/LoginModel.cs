@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FuegoSoft.Pegasus.Web.Service.Models
 {
-    public class Login
+    public class LoginModel
     {
         [Required]
         [MaxLength(50, ErrorMessage = "Username has a maximum length of 50.")]

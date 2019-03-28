@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FuegoSoft.Pegasus.Web.Service.Models
 {
-    public class User
+    public class UserModel
     {
         [Required]
         [MaxLength(100, ErrorMessage = "Maximum length for username is up to 100 characters only.")]

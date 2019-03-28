@@ -28,5 +28,7 @@ namespace FuegoSoft.Pegasus.Lib.Business.Planner
         public int CreateUser() => _userBase.CreateUserAndRetrieveUserId();
 
         public bool IsUsernameIsAlreadyTaken() => _userBase.IsUsernameIsAlreadyTaken();
+
+        public bool UpdateUserPassword() => _userBase.UpdateUserPassword();
     }
 }
