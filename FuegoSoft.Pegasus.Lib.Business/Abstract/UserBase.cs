@@ -14,5 +14,6 @@ namespace FuegoSoft.Pegasus.Lib.Business.Abstract
         public abstract int CreateUserAndRetrieveUserId();
         public abstract bool IsUsernameIsAlreadyTaken();
         public abstract bool UpdateUserPassword();
+        public abstract int UpdateUserAndRetrieveUserId();
     }
 }

@@ -15,6 +15,7 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
         private string emailAddress;
         private string contactNumber;
         private Guid userKey;
+        private int userType;
 
         public UserStrategy(Guid userKey)
         {
@@ -32,6 +33,14 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
             this.userKey = userKey;
             this.oldPassword = oldPassword;
             this.newPassword = newPassword;
+        }
+
+        public UserStrategy(Guid userKey, string emailAddress, string contactNumber, int userType)
+        {
+            this.userKey = userKey;
+            this.userType = userType;
+            this.contactNumber = contactNumber;
+            this.emailAddress = emailAddress;
         }
 
         public UserStrategy(string username, string password, string emailAddress, string contactNumber)
@@ -187,6 +196,30 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
                 }
             }
             return result;
+        }
+
+        public override int UpdateUserAndRetrieveUserId()
+        {
+            int userId = 0;
+            if(userKey.ToString().Length == 36)
+            {
+                using(var userUnitOfWork = new UserUnitOfWork(new AyudaContext()))
+                {
+                    var user = userUnitOfWork.Users.GetUserByUserKey(userKey);
+                    if(user.UserId > 0)
+                    {
+                        user.EmailAddress = emailAddress;
+                        user.ContactNumber = contactNumber;
+                        user.DateUpdated = DateTime.Now;
+
+                        userUnitOfWork.Users.Update(user);
+                        userUnitOfWork.Complete();
+                        userUnitOfWork.Dispose();
+                        userId = user.UserId;
+                    }
+                }
+            }
+            return userId;
         }
     }
 }

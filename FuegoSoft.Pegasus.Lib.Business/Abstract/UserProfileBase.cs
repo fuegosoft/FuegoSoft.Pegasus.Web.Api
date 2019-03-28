@@ -9,5 +9,6 @@ namespace FuegoSoft.Pegasus.Lib.Business.Abstract
     {
         public abstract UserProfile GetUserProfileByUserId();
         public abstract bool CreateUserProfile();
+        public abstract bool UpdateUserProfile();
     }
 }
