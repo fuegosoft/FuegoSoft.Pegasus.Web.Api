@@ -10,6 +10,8 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
     {
         private string username;
         private string password;
+        private string oldPassword;
+        private string newPassword;
         private string emailAddress;
         private string contactNumber;
         private Guid userKey;
@@ -23,6 +25,13 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
         {
             this.username = username;
             this.password = password;
+        }
+
+        public UserStrategy(Guid userKey, string oldPassword, string newPassword)
+        {
+            this.userKey = userKey;
+            this.oldPassword = oldPassword;
+            this.newPassword = newPassword;
         }
 
         public UserStrategy(string username, string password, string emailAddress, string contactNumber)
@@ -152,6 +161,29 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
                 using(var userUnitOfWork = new UserUnitOfWork(new AyudaContext()))
                 {
                     result = userUnitOfWork.Users.IsUsernameIsAlreadyTaken(username, emailAddress, contactNumber);
+                }
+            }
+            return result;
+        }
+
+        public override bool UpdateUserPassword()
+        {
+            bool result = false;
+            if(userKey.ToString().Length == 36 && !string.IsNullOrEmpty(oldPassword) && !string.IsNullOrEmpty(newPassword))
+            {
+                using(var userUnitOfWork = new UserUnitOfWork(new AyudaContext()))
+                {
+                    var user = userUnitOfWork.Users.GetUserByUserKey(userKey);
+                    if(user.UserId > 0)
+                    {
+                        if(SecurePasswordHelper.Verify(oldPassword, user.Password))
+                        {
+                            user.Password = SecurePasswordHelper.Hash(newPassword);
+                            userUnitOfWork.Users.Update(user);
+                            result = userUnitOfWork.Complete() > 0;
+                            userUnitOfWork.Dispose();
+                        }
+                    }
                 }
             }
             return result;

@@ -12,7 +12,6 @@ using FuegoSoft.Pegasus.Web.Service.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using UserModel = FuegoSoft.Pegasus.Web.Service.Models;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -43,7 +42,7 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public IActionResult PerformUserLogin([FromBody] Login login)
+        public IActionResult PerformUserLogin([FromBody] LoginModel login)
         {
             if(ModelState.IsValid)
             {
@@ -132,6 +131,29 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
             return BadRequest("Invalid user token request.");
         }
 
+        [AllowAnonymous]
+        [HttpPost("create")]
+        public IActionResult CreateUser([FromBody] UserModel user)
+        {
+            if (ModelState.IsValid)
+            {
+                userPlanner.SetUserStrategy(new UserStrategy(user.Username, user.EmailAddress, user.ContactNumber));
+                if (!userPlanner.IsUsernameIsAlreadyTaken())
+                {
+                    userPlanner.SetUserStrategy(new UserStrategy(user.Username, user.Password, user.EmailAddress, user.ContactNumber));
+                    var userId = userPlanner.CreateUser();
+                    if (userId > 0)
+                    {
+                        userProfilePlanner.SetUserProfilePlanner(new UserProfileStrategy(userId, user.FirstName, user.MiddleName, user.LastName, user.Gender, user.BirthDate));
+                        if (userProfilePlanner.CreateUserProfile())
+                            return Created("", "User is successfully created.");
+                    }
+                }
+                return BadRequest("Data already exist.");
+            }
+            return BadRequest(ModelState);
+        }
+
         [Authorize]
         [ValidateTokenIsActive]
         [HttpGet("get/userprofile")]
@@ -151,25 +173,22 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
             return BadRequest("Invalid requested token.");
         }
 
-        [AllowAnonymous]
-        [HttpPost("create")]
-        public IActionResult CreateUser([FromBody] UserModel.User user)
+        [Authorize]
+        [ValidateTokenIsActive]
+        [HttpPut("update/password")]
+        public IActionResult UserUpdatePassword([FromBody] PasswordModel password)
         {
             if(ModelState.IsValid)
             {
-                userPlanner.SetUserStrategy(new UserStrategy(user.Username, user.EmailAddress, user.ContactNumber));
-                if(!userPlanner.IsUsernameIsAlreadyTaken())
+                var getUserKey = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Actor).Select(c => c.Value).FirstOrDefault();
+                if(!string.IsNullOrEmpty(getUserKey))
                 {
-                    userPlanner.SetUserStrategy(new UserStrategy(user.Username, user.Password, user.EmailAddress, user.ContactNumber));
-                    var userId = userPlanner.CreateUser();
-                    if (userId > 0)
-                    {
-                        userProfilePlanner.SetUserProfilePlanner(new UserProfileStrategy(userId, user.FirstName, user.MiddleName, user.LastName, user.Gender, user.BirthDate));
-                        if (userProfilePlanner.CreateUserProfile())
-                            return Created("", "User is successfully created.");
-                    }
+                    userPlanner.SetUserStrategy(new UserStrategy(new Guid(getUserKey), password.OldPassword, password.NewPassword));
+                    var isUserPasswordUpdated = userPlanner.UpdateUserPassword();
+                    if (isUserPasswordUpdated)
+                        return Ok(new { isPasswordUpdated = isUserPasswordUpdated });
                 }
-                return BadRequest("Data already exist.");
+                return BadRequest("Invalid user token request.");
             }
             return BadRequest(ModelState);
         }
