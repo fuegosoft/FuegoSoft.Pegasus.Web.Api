@@ -15,5 +15,6 @@ namespace FuegoSoft.Pegasus.Lib.Data.Interface.Repository
         UserCredential GetUserCredentialByUserKey(Guid userKey);
         bool IsUsernameIsAlreadyTaken(string username, string emailAddress, string contactNumber);
         User GetUserByUserKey(Guid userKey);
+        int GetUserIdByUserKey(Guid userKey);
     }
 }

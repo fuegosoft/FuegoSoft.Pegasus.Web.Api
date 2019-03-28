@@ -67,5 +67,31 @@ namespace FuegoSoft.Pegasus.Lib.Business.Strategy
             }
             return userProfile;
         }
+
+        public override bool UpdateUserProfile()
+        {
+            bool result = false;
+            if(userId > 0)
+            {
+                using(var userUnitOfWork = new UserUnitOfWork(new AyudaContext()))
+                {
+                    var userProfile = userUnitOfWork.UserProfiles.GetUserProfileByUserId(userId);
+                    if(userProfile.UserProfileId > 0)
+                    {
+                        userProfile.FirstName = firstName;
+                        userProfile.MiddleName = middleName;
+                        userProfile.LastName = lastName;
+                        userProfile.Gender = gender;
+                        userProfile.BirthDate = birthDate;
+                        userProfile.DateUpdated = DateTime.Now;
+
+                        userUnitOfWork.UserProfiles.Update(userProfile);
+                        result = userUnitOfWork.Complete() > 0;
+                        userUnitOfWork.Dispose();
+                    }
+                }
+            }
+            return result;
+        }
     }
 }

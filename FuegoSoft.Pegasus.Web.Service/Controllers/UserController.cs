@@ -186,7 +186,34 @@ namespace FuegoSoft.Pegasus.Web.Service.Controllers
                     userPlanner.SetUserStrategy(new UserStrategy(new Guid(getUserKey), password.OldPassword, password.NewPassword));
                     var isUserPasswordUpdated = userPlanner.UpdateUserPassword();
                     if (isUserPasswordUpdated)
-                        return Ok(new { isPasswordUpdated = isUserPasswordUpdated });
+                        return Ok(new { isSuccessful = isUserPasswordUpdated });
+                }
+                return BadRequest("Invalid user token request.");
+            }
+            return BadRequest(ModelState);
+        }
+
+        [Authorize]
+        [ValidateTokenIsActive]
+        [HttpPut("update/profile")]
+        public IActionResult UserUpdateProfile([FromBody] UserProfileModel userProfile)
+        {
+            if(ModelState.IsValid)
+            {
+                var userKey = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Actor).Select(c => c.Value).FirstOrDefault();
+                if(!string.IsNullOrEmpty(userKey))
+                {
+                    userPlanner.SetUserStrategy(new UserStrategy(new Guid(userKey), userProfile.EmailAddress, userProfile.ContactNumber, 0));
+                    var userId = userPlanner.UpdateUserAndGetUserId();
+                    var userIdFromToken = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault();
+                    if (userId > 0 && Convert.ToInt32(userIdFromToken) == userId)
+                    {
+                        userProfilePlanner.SetUserProfilePlanner(new UserProfileStrategy(userId, userProfile.FirstName, userProfile.MiddleName, userProfile.LastName, userProfile.Gender, userProfile.BirthDate));
+                        var isUserProfileUpdated = userProfilePlanner.UpdateUserProfile();
+                        if (isUserProfileUpdated)
+                            return Ok(new { isSuccessful = isUserProfileUpdated });
+                    }
+                    return NotFound("Requested data was not found.");
                 }
                 return BadRequest("Invalid user token request.");
             }

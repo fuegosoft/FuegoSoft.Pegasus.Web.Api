@@ -150,5 +150,7 @@ namespace FuegoSoft.Pegasus.Lib.Data.Repository
         public bool IsUsernameIsAlreadyTaken(string username, string emailAddress, string contactNumber) => AyudaContext.User.Any(a => a.Username.Contains(username) || a.EmailAddress.Contains(emailAddress) || a.ContactNumber.Contains(contactNumber));
 
         public User GetUserByUserKey(Guid userKey) => AyudaContext.User.Where(w => w.UserKey == userKey).FirstOrDefault();
+
+        public int GetUserIdByUserKey(Guid userKey) => AyudaContext.User.Where(w => w.UserKey == userKey).FirstOrDefault().UserId;
     }
 }
